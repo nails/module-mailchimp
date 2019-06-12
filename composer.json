@@ -24,6 +24,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
+        "ext-curl": "*",
+        "ext-json": "*",
         "nails\/common": "dev-develop"
     },
     "require-dev": {

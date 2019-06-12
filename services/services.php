@@ -5,42 +5,12 @@
  * @link http://nailsapp.co.uk/docs/services
  */
 
-use Nails\MailChimp\Service\Api;
-
 return [
     /**
      * Classes/libraries which don't necessarily relate to a database table.
      * Once instantiated, a request for a service will always return the same instance.
      */
     'services'  => [
-        'ApiClient'       => function () {
-            if (class_exists('\App\MailChimp\Service\Api\Client')) {
-                return new \App\MailChimp\Service\Api\Client();
-            } else {
-                return new Api\Client();
-            }
-        },
-        'ApiLists'        => function () {
-            if (class_exists('\App\MailChimp\Service\Api\Lists')) {
-                return new \App\MailChimp\Service\Api\Lists();
-            } else {
-                return new Api\Lists();
-            }
-        },
-        'ApiListsMember'  => function () {
-            if (class_exists('\App\MailChimp\Service\Api\Lists\Member')) {
-                return new \App\MailChimp\Service\Api\Lists\Member();
-            } else {
-                return new Api\Lists\Member();
-            }
-        },
-        'ApiListsSegment' => function () {
-            if (class_exists('\App\MailChimp\Service\Api\Lists\Segment')) {
-                return new \App\MailChimp\Service\Api\Lists\Segment();
-            } else {
-                return new Api\Lists\Segment();
-            }
-        },
     ],
 
     /**
@@ -52,10 +22,47 @@ return [
     /**
      * A class for which a new instance is created each time it is requested.
      */
-    'factories' => [],
+    'factories' => [
+        'ApiClient'       => function () {
+            if (class_exists('\App\MailChimp\Factory\Api\Client')) {
+                return new \App\MailChimp\Factory\Api\Client();
+            } else {
+                return new \Nails\MailChimp\Factory\Api\Client();
+            }
+        },
+        'ApiLists'        => function () {
+            if (class_exists('\App\MailChimp\Factory\Api\Lists')) {
+                return new \App\MailChimp\Factory\Api\Lists();
+            } else {
+                return new \Nails\MailChimp\Factory\Api\Lists();
+            }
+        },
+        'ApiListsMember'  => function () {
+            if (class_exists('\App\MailChimp\Factory\Api\Lists\Member')) {
+                return new \App\MailChimp\Factory\Api\Lists\Member();
+            } else {
+                return new \Nails\MailChimp\Factory\Api\Lists\Member();
+            }
+        },
+        'ApiListsSegment' => function () {
+            if (class_exists('\App\MailChimp\Factory\Api\Lists\Segment')) {
+                return new \App\MailChimp\Factory\Api\Lists\Segment();
+            } else {
+                return new \Nails\MailChimp\Factory\Api\Lists\Segment();
+            }
+        },
+    ],
 
     /**
      * A class which represents an object from the database
      */
-    'resources' => [],
+    'resources' => [
+        'List' => function ($oObj) {
+            if (class_exists('\App\MailChimp\Resource\MailChimpList')) {
+                return new \App\MailChimp\Resource\MailChimpList($oObj);
+            } else {
+                return new \Nails\MailChimp\Resource\MailChimpList($oObj);
+            }
+        },
+    ],
 ];
