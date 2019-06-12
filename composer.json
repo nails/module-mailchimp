@@ -41,5 +41,8 @@
             "namespace": "Nails\\MailChimp\\",
             "data": {}
         }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit"
     }
 }
