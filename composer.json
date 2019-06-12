@@ -30,8 +30,13 @@
         "phpunit\/phpunit": "8.*"
     },
     "autoload": {
-        "psr4": {
-            "Nails\\MailChimp": "src\/"
+        "psr-4": {
+            "Nails\\MailChimp\\": "src\/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nails\\MailChimp\\Tests\\": "tests\/"
         }
     },
     "extra": {
