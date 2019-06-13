@@ -119,11 +119,11 @@ class Client
      * @param string $sEndPoint   The endpoint to call
      * @param array  $aParameters Any parameters to send
      *
-     * @return stdClass
+     * @return stdClass|null
      * @throws ApiException
      * @throws UnauthorisedException
      */
-    public function call(string $sMethod, string $sEndPoint, array $aParameters = []): stdClass
+    public function call(string $sMethod, string $sEndPoint, array $aParameters = []): ?stdClass
     {
         //  @todo (Pablo - 2019-06-12) - Handle HTTP method
         //  @todo (Pablo - 2019-06-12) - Handle payload
@@ -135,17 +135,23 @@ class Client
             ) . $sEndPoint;
 
         $oCurl = curl_init($sUrl);
+
+        curl_setopt($oCurl, CURLOPT_CUSTOMREQUEST, $sMethod);
+
         switch ($sMethod) {
+            case 'GET':
+                break;
             case 'POST':
                 $sData = json_encode($aParameters);
-                curl_setopt($oCurl, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_setopt($oCurl, CURLOPT_POSTFIELDS, $sData);
                 curl_setopt($oCurl, CURLOPT_HTTPHEADER, [
                     'Content-Type: application/json',
                     'Content-Length: ' . strlen($sData),
                 ]);
                 break;
-            default:
+            case 'DELETE':
+                break;
+            case 'PUT':
                 break;
         }
 
@@ -153,7 +159,8 @@ class Client
         curl_setopt($oCurl, CURLOPT_TIMEOUT, 30);
         curl_setopt($oCurl, CURLOPT_RETURNTRANSFER, true);
 
-        $oResponse   = json_decode(curl_exec($oCurl));
+        $sResponse   = curl_exec($oCurl);
+        $oResponse   = json_decode($sResponse);
         $iReturnCode = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
 
         curl_close($oCurl);
@@ -162,8 +169,7 @@ class Client
             throw new UnauthorisedException(
                 $oResponse->detail
             );
-        } elseif ($iReturnCode !== 200) {
-
+        } elseif ($iReturnCode >= 300) {
             $oException = new ApiException($oResponse->detail);
             if (!empty($oResponse->errors)) {
                 $oException->setData($oResponse->errors);
@@ -182,11 +188,11 @@ class Client
      * @param string $sEndPoint
      * @param array  $aParameters
      *
-     * @return stdClass
+     * @return stdClass|null
      * @throws ApiException
      * @throws UnauthorisedException
      */
-    public function get(string $sEndPoint, array $aParameters = []): stdClass
+    public function get(string $sEndPoint, array $aParameters = []): ?stdClass
     {
         return $this->call('GET', $sEndPoint, $aParameters);
     }
@@ -199,11 +205,11 @@ class Client
      * @param string $sEndPoint
      * @param array  $aParameters
      *
-     * @return stdClass
+     * @return stdClass|null
      * @throws ApiException
      * @throws UnauthorisedException
      */
-    public function post(string $sEndPoint, array $aParameters = []): stdClass
+    public function post(string $sEndPoint, array $aParameters = []): ?stdClass
     {
         return $this->call('POST', $sEndPoint, $aParameters);
     }
@@ -216,11 +222,11 @@ class Client
      * @param string $sEndPoint
      * @param array  $aParameters
      *
-     * @return stdClass
+     * @return stdClass|null
      * @throws ApiException
      * @throws UnauthorisedException
      */
-    public function delete(string $sEndPoint, array $aParameters = []): stdClass
+    public function delete(string $sEndPoint, array $aParameters = []): ?stdClass
     {
         return $this->call('DELETE', $sEndPoint, $aParameters);
     }
@@ -233,11 +239,11 @@ class Client
      * @param string $sEndPoint
      * @param array  $aParameters
      *
-     * @return stdClass
+     * @return stdClass|null
      * @throws ApiException
      * @throws UnauthorisedException
      */
-    public function put(string $sEndPoint, array $aParameters = []): stdClass
+    public function put(string $sEndPoint, array $aParameters = []): ?stdClass
     {
         return $this->call('PUT', $sEndPoint, $aParameters);
     }

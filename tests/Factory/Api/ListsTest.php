@@ -3,6 +3,7 @@
 namespace Nails\MailChimp\Tests\Factory\Api;
 
 use Nails\Factory;
+use Nails\MailChimp\Exception\Api\ApiException;
 use Nails\MailChimp\Factory\Api\Client;
 use Nails\MailChimp\Resource\MailChimpList;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Nails\MailChimp\Tests\Factory\Api
  */
-class ListsTest extends TestCase
+final class ListsTest extends TestCase
 {
     /**
      * @var Client
@@ -21,7 +22,7 @@ class ListsTest extends TestCase
 
     // --------------------------------------------------------------------------
 
-    private $sCreatedListId;
+    private static $sCreatedListId;
 
     // --------------------------------------------------------------------------
 
@@ -33,29 +34,6 @@ class ListsTest extends TestCase
             'api_key'     => getenv('MAILCHIMP_API_KEY'),
             'api_version' => getenv('MAILCHIMP_API_VERSION'),
         ]);
-    }
-
-    // --------------------------------------------------------------------------
-
-    public function test_can_list_lists()
-    {
-        $aLists = static::$oClient->lists()->getAll();
-
-        $this->assertIsArray($aLists);
-        $this->assertNotEmpty($aLists);
-    }
-
-    // --------------------------------------------------------------------------
-
-    public function test_can_get_list_by_id()
-    {
-        $aLists       = static::$oClient->lists()->getAll();
-        $oDesiredList = reset($aLists);
-        $oList        = static::$oClient->lists()->getById($oDesiredList->id);
-
-        $this->assertNotEmpty($oList);
-        $this->assertInstanceOf(MailChimpList::class, $oDesiredList);
-        $this->assertEquals($oDesiredList->id, $oList->id);
     }
 
     // --------------------------------------------------------------------------
@@ -85,17 +63,48 @@ class ListsTest extends TestCase
 
         $this->assertInstanceOf(MailChimpList::class, $oList);
         $this->assertNotEmpty($oList->id);
+
+        static::$sCreatedListId = $oList->id;
+    }
+
+    // --------------------------------------------------------------------------
+
+    public function test_can_list_lists()
+    {
+        $aLists = static::$oClient->lists()->getAll();
+
+        $this->assertIsArray($aLists);
+        $this->assertNotEmpty($aLists);
+    }
+
+    // --------------------------------------------------------------------------
+
+    public function test_can_get_list_by_id()
+    {
+        if (empty(static::$sCreatedListId)) {
+            $this->addWarning('No list ID to fetch');
+        } else {
+
+            $oList = static::$oClient->lists()->getById(static::$sCreatedListId);
+
+            $this->assertNotEmpty($oList);
+            $this->assertInstanceOf(MailChimpList::class, $oList);
+            $this->assertEquals(static::$sCreatedListId, $oList->id);
+        }
     }
 
     // --------------------------------------------------------------------------
 
     public function test_can_delete_list()
     {
-        $this->doesNotPerformAssertions();
-        if (empty($this->sCreatedListId)) {
+        if (empty(static::$sCreatedListId)) {
             $this->addWarning('No list ID to delete');
         } else {
-            static::$oClient->lists()->delete($this->sCreatedListId);
+
+            static::$oClient->lists()->delete(static::$sCreatedListId);
+
+            $this->expectException(ApiException::class);
+            static::$oClient->lists()->getById(static::$sCreatedListId);
         }
     }
 }

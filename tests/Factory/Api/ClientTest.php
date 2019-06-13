@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @package Nails\MailChimp\Tests\Factory\Api
  */
-class ClientTest extends TestCase
+final class ClientTest extends TestCase
 {
     public function test_client_uses_defaults()
     {
