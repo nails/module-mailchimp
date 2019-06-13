@@ -5,6 +5,7 @@ namespace Nails\MailChimp\Factory\Api;
 use Nails\Common\Helper\ArrayHelper;
 use Nails\MailChimp\Exception\Api\ApiException;
 use Nails\MailChimp\Exception\Api\UnauthorisedException;
+use Nails\MailChimp\Factory\Api\Lists\Member;
 use stdClass;
 
 /**
@@ -32,6 +33,13 @@ class Client
      * @var Lists
      */
     protected $oListsInstance;
+
+    /**
+     * The instance of the member class
+     *
+     * @var Member
+     */
+    protected $oMemberInstance;
 
     // --------------------------------------------------------------------------
 
@@ -61,15 +69,25 @@ class Client
     /**
      * Client constructor.
      *
-     * @param array $aConfig        The config array
-     * @param Lists $oListsInstance The instance of the Lists class
+     * @param array  $aConfig         The config array
+     * @param Member $oMemberInstance The instance of the Member class
+     * @param Lists  $oListsInstance  The instance of the Lists class
      */
-    public function __construct(array $aConfig = [], Lists $oListsInstance = null)
-    {
+    public function __construct(
+        array $aConfig = [],
+        Member $oMemberInstance = null,
+        Lists $oListsInstance = null
+    ) {
+        if (is_null($oMemberInstance)) {
+            $this->oMemberInstance = new Member();
+        }
+        $this->oMemberInstance->setClient($this);
+
         if (is_null($oListsInstance)) {
             $this->oListsInstance = new Lists();
         }
         $this->oListsInstance->setClient($this);
+        $this->oListsInstance->setMember($this->oMemberInstance);
 
         // --------------------------------------------------------------------------
 
@@ -163,7 +181,7 @@ class Client
         $sResponse   = curl_exec($oCurl);
         $oResponse   = json_decode($sResponse);
         $iReturnCode = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
-
+        d($iReturnCode);
         curl_close($oCurl);
 
         if ($iReturnCode === 401) {

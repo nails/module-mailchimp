@@ -6,6 +6,7 @@ use Nails\Common\Exception\FactoryException;
 use Nails\Factory;
 use Nails\MailChimp\Exception\Api\ApiException;
 use Nails\MailChimp\Exception\Api\UnauthorisedException;
+use Nails\MailChimp\Exception\MailChimpException;
 use Nails\MailChimp\Factory\Api\Client;
 use Nails\MailChimp\Resource\MailChimpList;
 use PHPUnit\Framework\TestCase;
@@ -92,10 +93,12 @@ final class MemberTest extends TestCase
 
     public function test_can_add_member()
     {
+        $oNow            = Factory::factory('DateTime');
+        $sEmail          = 'module-mailchimp-' . $oNow->format('YmdHis') . '@nailsapp.co.uk';
         static::$oMember = static::$oList
             ->members()
             ->create([
-                'email_address' => 'module-mailchimp@nailsapp.co.uk',
+                'email_address' => $sEmail,
                 'status'        => 'subscribed',
             ]);
 
@@ -126,7 +129,7 @@ final class MemberTest extends TestCase
             $oMember = static::$oList->members()->getById(static::$oMember->id);
 
             $this->assertNotEmpty($oMember);
-            $this->assertInstanceOf(MailChimpList::class, $oMember);
+            $this->assertInstanceOf(MailChimpList\Member::class, $oMember);
             $this->assertEquals(static::$oMember->id, $oMember->id);
         }
     }
@@ -139,19 +142,23 @@ final class MemberTest extends TestCase
             $this->addWarning('No member ID to update');
         } else {
 
-            $oMember = static::$oList
-                ->members()
-                ->update(
-                    static::$oMember->id,
-                    [
-                        'email_address' => 'module-mailchimp+updated@nailsapp.co.uk',
-                    ]
-                );
+            try {
+                $oMember = static::$oList
+                    ->members()
+                    ->update(
+                        static::$oMember->id,
+                        [
+                            'status' => 'unsubscribed',
+                        ]
+                    );
+            } catch (MailChimpException $e) {
+                dd($e->getData());
+            }
 
             $this->assertNotEmpty($oMember);
             $this->assertInstanceOf(MailChimpList\Member::class, $oMember);
             $this->assertEquals(static::$oMember->id, $oMember->id);
-            $this->assertEquals('module-mailchimp+updated@nailsapp.co.uk', $oMember->email_address);
+            $this->assertEquals('unsubscribed', $oMember->status);
         }
     }
 
@@ -166,8 +173,8 @@ final class MemberTest extends TestCase
                 ->members()
                 ->delete(static::$oMember->id);
 
-            $this->expectException(ApiException::class);
-            static::$oList->members()->getById(static::$oMember->id);
+            $oMember = static::$oList->members()->getById(static::$oMember->id);
+            d($oMember);
         }
     }
 }

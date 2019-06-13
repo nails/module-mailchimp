@@ -6,6 +6,7 @@ use Nails\Common\Exception\FactoryException;
 use Nails\Factory;
 use Nails\MailChimp\Exception\Api\ApiException;
 use Nails\MailChimp\Exception\Api\UnauthorisedException;
+use Nails\MailChimp\Factory\Api\Lists\Member;
 use Nails\MailChimp\Resource\MailChimpList;
 use stdClass;
 
@@ -50,6 +51,39 @@ class Lists
     // --------------------------------------------------------------------------
 
     /**
+     * The Member being used
+     *
+     * @var Member
+     */
+    protected $oMember;
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Sets the client
+     *
+     * @param Member $oMember
+     */
+    public function setMember(Member $oMember): void
+    {
+        $this->oMember = $oMember;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Returns the client
+     *
+     * @return Member
+     */
+    public function getMember(): Member
+    {
+        return $this->oMember;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Lists all lists
      *
      * @return MailChimpList[]
@@ -64,6 +98,7 @@ class Lists
             /** @var MailChimpList $oList */
             $oList = Factory::resource('List', 'nails/module-mailchimp', $oList);
             $oList->setClient($this->getClient());
+            $oList->setMember($this->getMember());
 
             return $oList;
         }, $oResponse->lists);
@@ -74,7 +109,7 @@ class Lists
     /**
      * Returns a specific list
      *
-     * @param string $sId
+     * @param string $sId the ID of the list
      *
      * @return MailChimpList
      * @throws ApiException
@@ -97,7 +132,7 @@ class Lists
     /**
      * Creates a new list
      *
-     * @param array $aParameters
+     * @param array $aParameters Parameters to create the list with
      *
      * @return MailChimpList
      * @throws ApiException
@@ -114,6 +149,7 @@ class Lists
         /** @var MailChimpList $oResource */
         $oResource = Factory::resource('List', 'nails/module-mailchimp', $oResponse);
         $oResource->setClient($this->getClient());
+        $oResource->setMember($this->getMember());
 
         return $oResource;
     }

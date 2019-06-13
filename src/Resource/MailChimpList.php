@@ -20,6 +20,11 @@ class MailChimpList extends Resource
      */
     protected $oClient;
 
+    /**
+     * @var Member
+     */
+    protected $oMember;
+
     // --------------------------------------------------------------------------
 
     public $id;
@@ -42,8 +47,27 @@ class MailChimpList extends Resource
 
     // --------------------------------------------------------------------------
 
+    /**
+     * Sets the member instance
+     *
+     * @param Member $oMember
+     *
+     * @return $this
+     */
+    public function setMember(Member $oMember): MailChimpList
+    {
+        $this->oMember = $oMember;
+        $this->oMember->setList($this);
+        return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * @return Member
+     */
     public function members(): Member
     {
-
+        return $this->oMember;
     }
 }
