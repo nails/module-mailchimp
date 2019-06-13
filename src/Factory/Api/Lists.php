@@ -121,14 +121,23 @@ class Lists
     /**
      * Updates a list
      *
-     * @param string $sId         The list ID to update
-     * @param array  $aParameters The values to set
+     * @param string $sId
+     * @param array  $aParameters
      *
-     * @return bool
+     * @return MailChimpList
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
      */
-    public function update(string $sId, array $aParameters = []): bool
+    public function update(string $sId, array $aParameters = []): MailChimpList
     {
-        //  @todo (Pablo - 2019-06-12) - Update a list
+        $oResponse = $this->getClient()->patch('/lists/' . $sId, $aParameters);
+
+        /** @var MailChimpList $oResource */
+        $oResource = Factory::resource('List', 'nails/module-mailchimp', $oResponse);
+        $oResource->setClient($this->getClient());
+
+        return $oResource;
     }
 
     // --------------------------------------------------------------------------

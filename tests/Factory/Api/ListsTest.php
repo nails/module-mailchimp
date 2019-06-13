@@ -95,6 +95,28 @@ final class ListsTest extends TestCase
 
     // --------------------------------------------------------------------------
 
+    public function test_can_update_list()
+    {
+        if (empty(static::$sCreatedListId)) {
+            $this->addWarning('No list ID to update');
+        } else {
+
+            $oList = static::$oClient->lists()->update(
+                static::$sCreatedListId,
+                [
+                    'name' => 'Updated',
+                ]
+            );
+
+            $this->assertNotEmpty($oList);
+            $this->assertInstanceOf(MailChimpList::class, $oList);
+            $this->assertEquals(static::$sCreatedListId, $oList->id);
+            $this->assertEquals('Updated', $oList->name);
+        }
+    }
+
+    // --------------------------------------------------------------------------
+
     public function test_can_delete_list()
     {
         if (empty(static::$sCreatedListId)) {

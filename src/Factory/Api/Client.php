@@ -19,6 +19,11 @@ class Client
     const DEFAULT_API_KEY     = '';
     const DEFAULT_API_VERSION = '3.0';
 
+    const HTTP_METHOD_GET    = 'GET';
+    const HTTP_METHOD_POST   = 'POST';
+    const HTTP_METHOD_PATCH  = 'PATCH';
+    const HTTP_METHOD_DELETE = 'DELETE';
+
     // --------------------------------------------------------------------------
 
     /**
@@ -125,9 +130,6 @@ class Client
      */
     public function call(string $sMethod, string $sEndPoint, array $aParameters = []): ?stdClass
     {
-        //  @todo (Pablo - 2019-06-12) - Handle HTTP method
-        //  @todo (Pablo - 2019-06-12) - Handle payload
-
         $sUrl = sprintf(
                 static::API_URL,
                 $this->getDataCenter(),
@@ -139,9 +141,10 @@ class Client
         curl_setopt($oCurl, CURLOPT_CUSTOMREQUEST, $sMethod);
 
         switch ($sMethod) {
-            case 'GET':
+            case static::HTTP_METHOD_GET:
                 break;
-            case 'POST':
+            case static::HTTP_METHOD_POST:
+            case static::HTTP_METHOD_PATCH:
                 $sData = json_encode($aParameters);
                 curl_setopt($oCurl, CURLOPT_POSTFIELDS, $sData);
                 curl_setopt($oCurl, CURLOPT_HTTPHEADER, [
@@ -149,9 +152,7 @@ class Client
                     'Content-Length: ' . strlen($sData),
                 ]);
                 break;
-            case 'DELETE':
-                break;
-            case 'PUT':
+            case static::HTTP_METHOD_DELETE:
                 break;
         }
 
@@ -185,8 +186,8 @@ class Client
     /**
      * Executes a GET request
      *
-     * @param string $sEndPoint
-     * @param array  $aParameters
+     * @param string $sEndPoint   The endpoint to GET
+     * @param array  $aParameters Any parameters to pass
      *
      * @return stdClass|null
      * @throws ApiException
@@ -194,7 +195,7 @@ class Client
      */
     public function get(string $sEndPoint, array $aParameters = []): ?stdClass
     {
-        return $this->call('GET', $sEndPoint, $aParameters);
+        return $this->call(static::HTTP_METHOD_GET, $sEndPoint, $aParameters);
     }
 
     // --------------------------------------------------------------------------
@@ -202,8 +203,8 @@ class Client
     /**
      * Executes a POST request
      *
-     * @param string $sEndPoint
-     * @param array  $aParameters
+     * @param string $sEndPoint   The endpoint to POST
+     * @param array  $aParameters Any parameters to pass
      *
      * @return stdClass|null
      * @throws ApiException
@@ -211,7 +212,7 @@ class Client
      */
     public function post(string $sEndPoint, array $aParameters = []): ?stdClass
     {
-        return $this->call('POST', $sEndPoint, $aParameters);
+        return $this->call(static::HTTP_METHOD_POST, $sEndPoint, $aParameters);
     }
 
     // --------------------------------------------------------------------------
@@ -219,8 +220,8 @@ class Client
     /**
      * Executes a DELETE request
      *
-     * @param string $sEndPoint
-     * @param array  $aParameters
+     * @param string $sEndPoint   The endpoint to DELETE
+     * @param array  $aParameters Any parameters to pass
      *
      * @return stdClass|null
      * @throws ApiException
@@ -228,24 +229,24 @@ class Client
      */
     public function delete(string $sEndPoint, array $aParameters = []): ?stdClass
     {
-        return $this->call('DELETE', $sEndPoint, $aParameters);
+        return $this->call(static::HTTP_METHOD_DELETE, $sEndPoint, $aParameters);
     }
 
     // --------------------------------------------------------------------------
 
     /**
-     * Executes a PUT request
+     * Executes a PATCH request
      *
-     * @param string $sEndPoint
-     * @param array  $aParameters
+     * @param string $sEndPoint   The endpoint to PATCH
+     * @param array  $aParameters Any parameters to pass
      *
      * @return stdClass|null
      * @throws ApiException
      * @throws UnauthorisedException
      */
-    public function put(string $sEndPoint, array $aParameters = []): ?stdClass
+    public function patch(string $sEndPoint, array $aParameters = []): ?stdClass
     {
-        return $this->call('PUT', $sEndPoint, $aParameters);
+        return $this->call(static::HTTP_METHOD_PATCH, $sEndPoint, $aParameters);
     }
 
     // --------------------------------------------------------------------------
