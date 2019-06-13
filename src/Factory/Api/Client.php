@@ -62,7 +62,7 @@ class Client
      * Client constructor.
      *
      * @param array $aConfig        The config array
-     * @param Lists $oListsInstance The instance of the lists class
+     * @param Lists $oListsInstance The instance of the Lists class
      */
     public function __construct(array $aConfig = [], Lists $oListsInstance = null)
     {

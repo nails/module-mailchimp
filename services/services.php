@@ -57,11 +57,18 @@ return [
      * A class which represents an object from the database
      */
     'resources' => [
-        'List' => function ($oObj) {
+        'List'       => function ($oObj) {
             if (class_exists('\App\MailChimp\Resource\MailChimpList')) {
                 return new \App\MailChimp\Resource\MailChimpList($oObj);
             } else {
                 return new \Nails\MailChimp\Resource\MailChimpList($oObj);
+            }
+        },
+        'ListMember' => function ($oObj) {
+            if (class_exists('\App\MailChimp\Resource\MailChimpList\Member')) {
+                return new \App\MailChimp\Resource\MailChimpList\Member($oObj);
+            } else {
+                return new \Nails\MailChimp\Resource\MailChimpList\Member($oObj);
             }
         },
     ],

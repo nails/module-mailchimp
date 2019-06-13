@@ -4,6 +4,7 @@ namespace Nails\MailChimp\Resource;
 
 use Nails\Common\Resource;
 use Nails\MailChimp\Factory\Api\Client;
+use Nails\MailChimp\Factory\Api\Lists\Member;
 
 /**
  * Class MailChimpList
@@ -21,6 +22,11 @@ class MailChimpList extends Resource
 
     // --------------------------------------------------------------------------
 
+    public $id;
+    public $name;
+
+    // --------------------------------------------------------------------------
+
     /**
      * Sets the client
      *
@@ -32,5 +38,12 @@ class MailChimpList extends Resource
     {
         $this->oClient = $oClient;
         return $this;
+    }
+
+    // --------------------------------------------------------------------------
+
+    public function members(): Member
+    {
+
     }
 }

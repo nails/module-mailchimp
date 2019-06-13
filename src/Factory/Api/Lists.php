@@ -97,17 +97,19 @@ class Lists
     /**
      * Creates a new list
      *
+     * @param array $aParameters
+     *
      * @return MailChimpList
      * @throws ApiException
      * @throws FactoryException
      * @throws UnauthorisedException
      */
-    public function create(array $aConfig): MailChimpList
+    public function create(array $aParameters): MailChimpList
     {
         //  @todo (Pablo - 2019-06-12) - Validate
         //  @todo (Pablo - 2019-06-12) - Use the FormValidation library when it is not dependent on CI
 
-        $oResponse = $this->getClient()->post('/lists', $aConfig);
+        $oResponse = $this->getClient()->post('/lists', $aParameters);
 
         /** @var MailChimpList $oResource */
         $oResource = Factory::resource('List', 'nails/module-mailchimp', $oResponse);

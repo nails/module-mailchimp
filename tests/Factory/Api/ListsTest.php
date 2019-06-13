@@ -2,8 +2,10 @@
 
 namespace Nails\MailChimp\Tests\Factory\Api;
 
+use Nails\Common\Exception\FactoryException;
 use Nails\Factory;
 use Nails\MailChimp\Exception\Api\ApiException;
+use Nails\MailChimp\Exception\Api\UnauthorisedException;
 use Nails\MailChimp\Factory\Api\Client;
 use Nails\MailChimp\Resource\MailChimpList;
 use PHPUnit\Framework\TestCase;
@@ -20,12 +22,18 @@ final class ListsTest extends TestCase
      */
     private static $oClient;
 
+    /**
+     * The ID of the list which is created by the tests
+     *
+     * @var MailChimpList
+     */
+    private static $oList;
+
     // --------------------------------------------------------------------------
 
-    private static $sCreatedListId;
-
-    // --------------------------------------------------------------------------
-
+    /**
+     * Sets up the Client
+     */
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
@@ -38,6 +46,11 @@ final class ListsTest extends TestCase
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
     public function test_can_create_list()
     {
         $oNow  = Factory::factory('DateTime');
@@ -64,11 +77,15 @@ final class ListsTest extends TestCase
         $this->assertInstanceOf(MailChimpList::class, $oList);
         $this->assertNotEmpty($oList->id);
 
-        static::$sCreatedListId = $oList->id;
+        static::$oList = $oList;
     }
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws UnauthorisedException
+     */
     public function test_can_list_lists()
     {
         $aLists = static::$oClient->lists()->getAll();
@@ -79,30 +96,40 @@ final class ListsTest extends TestCase
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
     public function test_can_get_list_by_id()
     {
-        if (empty(static::$sCreatedListId)) {
+        if (empty(static::$oList)) {
             $this->addWarning('No list ID to fetch');
         } else {
 
-            $oList = static::$oClient->lists()->getById(static::$sCreatedListId);
+            $oList = static::$oClient->lists()->getById(static::$oList->id);
 
             $this->assertNotEmpty($oList);
             $this->assertInstanceOf(MailChimpList::class, $oList);
-            $this->assertEquals(static::$sCreatedListId, $oList->id);
+            $this->assertEquals(static::$oList->id, $oList->id);
         }
     }
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
     public function test_can_update_list()
     {
-        if (empty(static::$sCreatedListId)) {
+        if (empty(static::$oList)) {
             $this->addWarning('No list ID to update');
         } else {
 
             $oList = static::$oClient->lists()->update(
-                static::$sCreatedListId,
+                static::$oList->id,
                 [
                     'name' => 'Updated',
                 ]
@@ -110,23 +137,28 @@ final class ListsTest extends TestCase
 
             $this->assertNotEmpty($oList);
             $this->assertInstanceOf(MailChimpList::class, $oList);
-            $this->assertEquals(static::$sCreatedListId, $oList->id);
+            $this->assertEquals(static::$oList->id, $oList->id);
             $this->assertEquals('Updated', $oList->name);
         }
     }
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
     public function test_can_delete_list()
     {
-        if (empty(static::$sCreatedListId)) {
+        if (empty(static::$oList)) {
             $this->addWarning('No list ID to delete');
         } else {
 
-            static::$oClient->lists()->delete(static::$sCreatedListId);
+            static::$oClient->lists()->delete(static::$oList->id);
 
             $this->expectException(ApiException::class);
-            static::$oClient->lists()->getById(static::$sCreatedListId);
+            static::$oClient->lists()->getById(static::$oList->id);
         }
     }
 }
