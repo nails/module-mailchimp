@@ -54,25 +54,27 @@ final class ListsTest extends TestCase
     public function test_can_create_list()
     {
         $oNow  = Factory::factory('DateTime');
-        $oList = static::$oClient->lists()->create([
-            'name'                => 'Test List - ' . $oNow->format('Y-m-d H:i:s'),
-            'contact'             => [
-                'company'  => 'An Example Company',
-                'address1' => '123 Main street',
-                'city'     => 'Glasgow',
-                'state'    => 'Glasgow',
-                'zip'      => 'G20 8LR',
-                'country'  => 'Scotland',
-            ],
-            'permission_reminder' => 'This is a test list, you were added by mistake',
-            'campaign_defaults'   => [
-                'from_name'  => 'Test Name',
-                'from_email' => 'module-mailchimp@nailsapp.co.uk',
-                'subject'    => 'This is a test',
-                'language'   => 'en-gb',
-            ],
-            'email_type_option'   => false,
-        ]);
+        $oList = static::$oClient
+            ->lists()
+            ->create([
+                'name'                => 'Test List - ' . $oNow->format('Y-m-d H:i:s'),
+                'contact'             => [
+                    'company'  => 'An Example Company',
+                    'address1' => '123 Main street',
+                    'city'     => 'Glasgow',
+                    'state'    => 'Glasgow',
+                    'zip'      => 'G20 8LR',
+                    'country'  => 'Scotland',
+                ],
+                'permission_reminder' => 'This is a test list, you were added by mistake',
+                'campaign_defaults'   => [
+                    'from_name'  => 'Test Name',
+                    'from_email' => 'module-mailchimp@nailsapp.co.uk',
+                    'subject'    => 'This is a test',
+                    'language'   => 'en-gb',
+                ],
+                'email_type_option'   => false,
+            ]);
 
         $this->assertInstanceOf(MailChimpList::class, $oList);
         $this->assertNotEmpty($oList->id);
@@ -88,7 +90,9 @@ final class ListsTest extends TestCase
      */
     public function test_can_list_lists()
     {
-        $aLists = static::$oClient->lists()->getAll();
+        $aLists = static::$oClient
+            ->lists()
+            ->getAll();
 
         $this->assertIsArray($aLists);
         $this->assertNotEmpty($aLists);
@@ -107,7 +111,9 @@ final class ListsTest extends TestCase
             $this->addWarning('No list ID to fetch');
         } else {
 
-            $oList = static::$oClient->lists()->getById(static::$oList->id);
+            $oList = static::$oClient
+                ->lists()
+                ->getById(static::$oList->id);
 
             $this->assertNotEmpty($oList);
             $this->assertInstanceOf(MailChimpList::class, $oList);
@@ -128,12 +134,14 @@ final class ListsTest extends TestCase
             $this->addWarning('No list ID to update');
         } else {
 
-            $oList = static::$oClient->lists()->update(
-                static::$oList->id,
-                [
-                    'name' => 'Updated',
-                ]
-            );
+            $oList = static::$oClient
+                ->lists()
+                ->update(
+                    static::$oList->id,
+                    [
+                        'name' => 'Updated',
+                    ]
+                );
 
             $this->assertNotEmpty($oList);
             $this->assertInstanceOf(MailChimpList::class, $oList);
@@ -155,10 +163,14 @@ final class ListsTest extends TestCase
             $this->addWarning('No list ID to delete');
         } else {
 
-            static::$oClient->lists()->delete(static::$oList->id);
+            static::$oClient
+                ->lists()
+                ->delete(static::$oList->id);
 
             $this->expectException(ApiException::class);
-            static::$oClient->lists()->getById(static::$oList->id);
+            static::$oClient
+                ->lists()
+                ->getById(static::$oList->id);
         }
     }
 }

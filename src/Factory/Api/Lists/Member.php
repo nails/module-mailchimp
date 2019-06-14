@@ -105,18 +105,18 @@ class Member
     /**
      * Returns a specific member
      *
-     * @param string $sId The ID of the member
+     * @param string $sEmail The email address of the member
      *
      * @return MailChimpList\Member
      * @throws ApiException
      * @throws UnauthorisedException
      * @throws FactoryException
      */
-    public function getById(string $sId): MailChimpList\Member
+    public function getByEmail(string $sEmail): MailChimpList\Member
     {
         $oMember = $this->getClient()
             ->get(
-                $this->buildEndpoint($sId)
+                $this->buildEndpoint($sEmail)
             );
 
         return $this->buildResource($oMember);
@@ -155,7 +155,7 @@ class Member
     /**
      * Updates a member
      *
-     * @param string $sId         The ID of the member to update
+     * @param string $sEmail      The email address of the member to update
      * @param array  $aParameters The parameters to update the list with
      *
      * @return MailChimpList\Member
@@ -163,15 +163,50 @@ class Member
      * @throws FactoryException
      * @throws UnauthorisedException
      */
-    public function update(string $sId, array $aParameters = []): MailChimpList\Member
+    public function update(string $sEmail, array $aParameters = []): MailChimpList\Member
     {
         $oResponse = $this->getClient()
             ->patch(
-                $this->buildEndpoint($sId),
+                $this->buildEndpoint($sEmail),
                 $aParameters
             );
 
         return $this->buildResource($oResponse);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Archives an existing member
+     *
+     * @param string $sEmail The email address of the member to archive
+     *
+     * @throws ApiException
+     * @throws UnauthorisedException
+     */
+    public function archive(string $sEmail): void
+    {
+        $this->getClient()
+            ->delete(
+                $this->buildEndpoint($sEmail)
+            );
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Unarchives (resubscribes) a member
+     *
+     * @param string $sEmail The email address of the member to unarchive
+     *
+     * @return MailChimpList\Member
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
+    public function unarchive(string $sEmail): MailChimpList\Member
+    {
+        return $this->update($sEmail, ['status' => 'subscribed']);
     }
 
     // --------------------------------------------------------------------------
@@ -187,10 +222,8 @@ class Member
     public function delete(string $sEmail): void
     {
         $this->getClient()
-            ->delete(
-                $this->buildEndpoint(
-                    md5(strtolower($sEmail))
-                )
+            ->post(
+                $this->buildEndpoint($sEmail) . '/actions/delete-permanent'
             );
     }
 
@@ -199,15 +232,15 @@ class Member
     /**
      * Builds the endpoint URL
      *
-     * @param string $sId The ID of the resource
+     * @param string $sEmail The email address of the resource
      *
      * @return string
      */
-    protected function buildEndpoint(string $sId = null)
+    protected function buildEndpoint(string $sEmail = null)
     {
         $sEndpoint = '/lists/' . $this->getList()->id . '/members';
-        if (!empty($sId)) {
-            $sEndpoint .= '/' . $sId;
+        if (!empty($sEmail)) {
+            $sEndpoint .= '/' . $this->buildSubscriberHash($sEmail);
         }
         return $sEndpoint;
     }
@@ -228,5 +261,19 @@ class Member
         $oResource = Factory::resource('ListMember', 'nails/module-mailchimp', $oMember);
 
         return $oResource;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Builds a subscriber hash
+     *
+     * @param string $sEmail The email address of the member
+     *
+     * @return string
+     */
+    protected function buildSubscriberHash(string $sEmail): string
+    {
+        return md5(strtolower(trim($sEmail)));
     }
 }
