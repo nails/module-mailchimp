@@ -181,7 +181,7 @@ class Client
         $sResponse   = curl_exec($oCurl);
         $oResponse   = json_decode($sResponse);
         $iReturnCode = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
-        d($iReturnCode);
+
         curl_close($oCurl);
 
         if ($iReturnCode === 401) {

@@ -92,15 +92,13 @@ class Lists
      */
     public function getAll(): array
     {
-        $oResponse = $this->getClient()->get('/lists');
+        $oResponse = $this->getClient()
+            ->get(
+                $this->buildEndpoint()
+            );
+
         return array_map(function (stdClass $oList) {
-
-            /** @var MailChimpList $oList */
-            $oList = Factory::resource('List', 'nails/module-mailchimp', $oList);
-            $oList->setClient($this->getClient());
-            $oList->setMember($this->getMember());
-
-            return $oList;
+            return $this->buildResource($oList);
         }, $oResponse->lists);
     }
 
@@ -118,13 +116,12 @@ class Lists
      */
     public function getById(string $sId): MailChimpList
     {
-        $oList = $this->getClient()->get('/lists/' . $sId);
+        $oResponse = $this->getClient()
+            ->get(
+                $this->buildEndpoint($sId)
+            );
 
-        /** @var MailChimpList $oList */
-        $oList = Factory::resource('List', 'nails/module-mailchimp', $oList);
-        $oList->setClient($this->getClient());
-
-        return $oList;
+        return $this->buildResource($oResponse);
     }
 
     // --------------------------------------------------------------------------
@@ -144,14 +141,15 @@ class Lists
         //  @todo (Pablo - 2019-06-12) - Validate
         //  @todo (Pablo - 2019-06-12) - Use the FormValidation library when it is not dependent on CI
 
-        $oResponse = $this->getClient()->post('/lists', $aParameters);
+        $oResponse = $this->getClient()
+            ->post(
+                $this->buildEndpoint(),
+                $aParameters
+            );
 
-        /** @var MailChimpList $oResource */
-        $oResource = Factory::resource('List', 'nails/module-mailchimp', $oResponse);
-        $oResource->setClient($this->getClient());
-        $oResource->setMember($this->getMember());
+        //  @todo (Pablo - 2019-06-14) - Catch API exceptions and convert into something more useful (e.g. list already exists)
 
-        return $oResource;
+        return $this->buildResource($oResponse);
     }
 
     // --------------------------------------------------------------------------
@@ -159,8 +157,8 @@ class Lists
     /**
      * Updates a list
      *
-     * @param string $sId
-     * @param array  $aParameters
+     * @param string $sId         The ID of the list to update
+     * @param array  $aParameters The parameters to update the list with
      *
      * @return MailChimpList
      * @throws ApiException
@@ -169,13 +167,13 @@ class Lists
      */
     public function update(string $sId, array $aParameters = []): MailChimpList
     {
-        $oResponse = $this->getClient()->patch('/lists/' . $sId, $aParameters);
+        $oResponse = $this->getClient()
+            ->patch(
+                $this->buildEndpoint($sId),
+                $aParameters
+            );
 
-        /** @var MailChimpList $oResource */
-        $oResource = Factory::resource('List', 'nails/module-mailchimp', $oResponse);
-        $oResource->setClient($this->getClient());
-
-        return $oResource;
+        return $this->buildResource($oResponse);
     }
 
     // --------------------------------------------------------------------------
@@ -183,13 +181,54 @@ class Lists
     /**
      * Deletes an existing list
      *
-     * @param string $sId The list to delete
+     * @param string $sId The ID of the list to delete
      *
      * @throws ApiException
      * @throws UnauthorisedException
      */
     public function delete(string $sId): void
     {
-        $this->getClient()->delete('/lists/' . $sId);
+        $this->getClient()
+            ->delete(
+                $this->buildEndpoint($sId)
+            );
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Builds the endpoint URL
+     *
+     * @param string $sId The ID of the resource
+     *
+     * @return string
+     */
+    protected function buildEndpoint(string $sId = null)
+    {
+        $sEndpoint = '/lists';
+        if (!empty($sId)) {
+            $sEndpoint .= '/' . $sId;
+        }
+        return $sEndpoint;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Builds a List resource
+     *
+     * @param stdClass $oList The list data
+     *
+     * @return MailChimpList
+     * @throws FactoryException
+     */
+    protected function buildResource(stdClass $oList): MailChimpList
+    {
+        /** @var MailChimpList $oResource */
+        $oResource = Factory::resource('List', 'nails/module-mailchimp', $oList);
+        $oResource->setClient($this->getClient());
+        $oResource->setMember($this->getMember());
+
+        return $oResource;
     }
 }

@@ -6,7 +6,6 @@ use Nails\Common\Exception\FactoryException;
 use Nails\Factory;
 use Nails\MailChimp\Exception\Api\ApiException;
 use Nails\MailChimp\Exception\Api\UnauthorisedException;
-use Nails\MailChimp\Exception\MailChimpException;
 use Nails\MailChimp\Factory\Api\Client;
 use Nails\MailChimp\Resource\MailChimpList;
 use PHPUnit\Framework\TestCase;
@@ -91,7 +90,12 @@ final class MemberTest extends TestCase
 
     // --------------------------------------------------------------------------
 
-    public function test_can_add_member()
+    /**
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
+    public function test_can_create_member()
     {
         $oNow            = Factory::factory('DateTime');
         $sEmail          = 'module-mailchimp-' . $oNow->format('YmdHis') . '@nailsapp.co.uk';
@@ -108,6 +112,10 @@ final class MemberTest extends TestCase
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws UnauthorisedException
+     */
     public function test_can_list_members()
     {
         $aMembers = static::$oList
@@ -120,6 +128,11 @@ final class MemberTest extends TestCase
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
     public function test_can_get_member_by_id()
     {
         if (empty(static::$oMember)) {
@@ -136,24 +149,25 @@ final class MemberTest extends TestCase
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
     public function test_can_update_member()
     {
         if (empty(static::$oMember)) {
             $this->addWarning('No member ID to update');
         } else {
 
-            try {
-                $oMember = static::$oList
-                    ->members()
-                    ->update(
-                        static::$oMember->id,
-                        [
-                            'status' => 'unsubscribed',
-                        ]
-                    );
-            } catch (MailChimpException $e) {
-                dd($e->getData());
-            }
+            $oMember = static::$oList
+                ->members()
+                ->update(
+                    static::$oMember->id,
+                    [
+                        'status' => 'unsubscribed',
+                    ]
+                );
 
             $this->assertNotEmpty($oMember);
             $this->assertInstanceOf(MailChimpList\Member::class, $oMember);
@@ -164,6 +178,11 @@ final class MemberTest extends TestCase
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @throws ApiException
+     * @throws FactoryException
+     * @throws UnauthorisedException
+     */
     public function test_can_delete_member()
     {
         if (empty(static::$oMember)) {
@@ -173,8 +192,8 @@ final class MemberTest extends TestCase
                 ->members()
                 ->delete(static::$oMember->id);
 
-            $oMember = static::$oList->members()->getById(static::$oMember->id);
-            d($oMember);
+            $this->expectException(ApiException::class);
+            static::$oList->members()->getById(static::$oMember->id);
         }
     }
 }
