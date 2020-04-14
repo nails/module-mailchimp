@@ -210,6 +210,21 @@ final class MemberTest extends TestCase
     // --------------------------------------------------------------------------
 
     /**
+     * @covers \Nails\MailChimp\Factory\Member::getById
+     * @throws ApiException
+     * @throws FactoryException
+     */
+    public function test_error_on_invalid_member_id()
+    {
+        $this->expectException(ApiException::class);
+        static::$oAudience
+            ->members()
+            ->getByEmail('invalid-email@example.com');
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * @covers \Nails\MailChimp\Factory\Member::update
      * @throws ApiException
      * @throws FactoryException
