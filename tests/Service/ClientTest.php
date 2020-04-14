@@ -26,7 +26,6 @@ final class ClientTest extends TestCase
         $oClient = new Client();
 
         $this->assertEquals($oClient::DEFAULT_API_URL, $oClient->getApiUrl());
-        $this->assertEquals($oClient::DEFAULT_DATA_CENTER, $oClient->getDataCenter());
         $this->assertEquals($oClient::DEFAULT_API_KEY, $oClient->getApiKey());
         $this->assertEquals('3.0', $oClient->getApiVersion());
     }
@@ -41,15 +40,18 @@ final class ClientTest extends TestCase
 
     // --------------------------------------------------------------------------
 
+    /**
+     * @covers \Nails\MailChimp\Service\Client::getDataCenter
+     * @covers \Nails\MailChimp\Service\Client::getApiKey
+     */
     public function test_can_configure_client()
     {
         //  These values will be used by the other tests
-        Config::set('MAILCHIMP_DATA_CENTER', getenv('TEST_DATA_CENTER'));
         Config::set('MAILCHIMP_API_KEY', getenv('TEST_API_KEY'));
         $oClient = new Client();
 
-        $this->assertEquals(Config::get('MAILCHIMP_DATA_CENTER'), $oClient->getDataCenter());
-        $this->assertEquals(Config::get('MAILCHIMP_API_KEY'), $oClient->getApiKey());
+        $this->assertEquals(getenv('TEST_DATA_CENTER'), $oClient->getDataCenter());
+        $this->assertEquals(getenv('TEST_API_KEY'), $oClient->getApiKey());
     }
 
     // --------------------------------------------------------------------------
@@ -120,7 +122,7 @@ final class ClientTest extends TestCase
      */
     public function test_client_has_method_audience()
     {
-        $this->assertTrue(method_exists(static::$oClient, 'audience'));
+        $this->assertTrue(method_exists(static::$oClient, 'audiences'));
     }
 
     // --------------------------------------------------------------------------

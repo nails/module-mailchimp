@@ -32,13 +32,12 @@ use stdClass;
  */
 class Client
 {
-    const DEFAULT_API_URL     = 'https://%s.api.mailchimp.com/%s/';
-    const DEFAULT_DATA_CENTER = '';
-    const DEFAULT_API_KEY     = '';
-    const HTTP_METHOD_GET     = 'GET';
-    const HTTP_METHOD_POST    = 'POST';
-    const HTTP_METHOD_PATCH   = 'PATCH';
-    const HTTP_METHOD_DELETE  = 'DELETE';
+    const DEFAULT_API_URL    = 'https://%s.api.mailchimp.com/%s/';
+    const DEFAULT_API_KEY    = '';
+    const HTTP_METHOD_GET    = 'GET';
+    const HTTP_METHOD_POST   = 'POST';
+    const HTTP_METHOD_PATCH  = 'PATCH';
+    const HTTP_METHOD_DELETE = 'DELETE';
 
     // --------------------------------------------------------------------------
 
@@ -48,13 +47,6 @@ class Client
      * @var string
      */
     protected $sApiUrl;
-
-    /**
-     * The data center of the account
-     *
-     * @var string
-     */
-    protected $sDataCenter;
 
     /**
      * The API key
@@ -77,9 +69,8 @@ class Client
      */
     public function __construct()
     {
-        $this->sApiUrl     = Config::get('MAILCHIMP_API_URL', static::DEFAULT_API_URL);
-        $this->sDataCenter = Config::get('MAILCHIMP_DATA_CENTER', static::DEFAULT_DATA_CENTER);
-        $this->sApiKey     = Config::get('MAILCHIMP_API_KEY', static::DEFAULT_API_KEY);
+        $this->sApiUrl = Config::get('MAILCHIMP_API_URL', static::DEFAULT_API_URL);
+        $this->sApiKey = Config::get('MAILCHIMP_API_KEY', static::DEFAULT_API_KEY);
     }
 
     // --------------------------------------------------------------------------
@@ -103,7 +94,13 @@ class Client
      */
     public function getDataCenter(): string
     {
-        return $this->sDataCenter;
+        $sKey = $this->getApiKey();
+        if (empty($sKey)) {
+            return '';
+        }
+
+        [$sKey, $sDataCenter] = explode('-', $this->getApiKey());
+        return $sDataCenter;
     }
 
     // --------------------------------------------------------------------------
