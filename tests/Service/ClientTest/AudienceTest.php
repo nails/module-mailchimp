@@ -45,7 +45,7 @@ final class AudienceTest extends TestCase
     {
         $this->assertInstanceOf(
             Audience::class,
-            static::$oClient->audience()
+            static::$oClient->audiences()
         );
     }
 
@@ -72,7 +72,7 @@ final class AudienceTest extends TestCase
     public function test_can_list_audiences()
     {
         $aAudiences = static::$oClient
-            ->audience()
+            ->audiences()
             ->getAll();
 
         $this->assertIsArray($aAudiences);
@@ -93,7 +93,7 @@ final class AudienceTest extends TestCase
         } else {
 
             $oAudience = static::$oClient
-                ->audience()
+                ->audiences()
                 ->getById(static::$oAudience->id);
 
             $this->assertNotEmpty($oAudience);
@@ -113,7 +113,7 @@ final class AudienceTest extends TestCase
     {
         $this->expectException(ApiException::class);
         static::$oClient
-            ->audience()
+            ->audiences()
             ->getById('invalid-id');
     }
 
@@ -131,7 +131,7 @@ final class AudienceTest extends TestCase
         } else {
 
             $oAudience = static::$oClient
-                ->audience()
+                ->audiences()
                 ->update(
                     static::$oAudience->id,
                     [
@@ -163,7 +163,7 @@ final class AudienceTest extends TestCase
 
             $this->expectException(ApiException::class);
             static::$oClient
-                ->audience()
+                ->audiences()
                 ->getById(static::$oAudience->id);
         }
     }
@@ -183,7 +183,7 @@ final class AudienceTest extends TestCase
     {
         $oNow = Factory::factory('DateTime');
         return $oClient
-            ->audience()
+            ->audiences()
             ->create([
                 'name'                => 'Test List - ' . $oNow->format('Y-m-d H:i:s'),
                 'contact'             => [
@@ -219,7 +219,7 @@ final class AudienceTest extends TestCase
     public static function deleteAudience(Client $oClient, Resource\Audience $oAudience)
     {
         $oClient
-            ->audience()
+            ->audiences()
             ->delete($oAudience->id);
     }
 }

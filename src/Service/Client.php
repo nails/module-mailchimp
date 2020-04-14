@@ -283,7 +283,7 @@ class Client
      * @return Audience
      * @throws FactoryException
      */
-    public function audience(): Audience
+    public function audiences(): Audience
     {
         /** @var Audience $oAudience */
         $oAudience = Factory::factory('Audience', Constants::MODULE_SLUG, $this);
@@ -303,7 +303,7 @@ class Client
      */
     public function members(string $sListId): Member
     {
-        return $this->audience()
+        return $this->audiences()
             ->getById($sListId)
             ->members();
     }
