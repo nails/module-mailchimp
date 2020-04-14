@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MailChimp Generic API Exception
+ * MailChimp API Unhandled Http Request Exception
  *
  * @package     Nails
  * @subpackage  module-mailchimp
@@ -12,14 +12,12 @@
 
 namespace Nails\MailChimp\Exception\Api;
 
-use Nails\Common\Exception\NailsException;
-
 /**
- * Class ApiException
+ * Class UnauthorisedException
  *
  * @package Nails\MailChimp\Exception\Api
  */
-class ApiException extends NailsException
+class UnhandledHttpRequestException extends ApiException
 {
 
 }

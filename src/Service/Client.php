@@ -1,100 +1,97 @@
 <?php
 
-namespace Nails\MailChimp\Factory\Api;
+/**
+ * MailChimp Client Service
+ *
+ * @package     Nails
+ * @subpackage  module-mailchimp
+ * @category    Service
+ * @author      Nails Dev Team
+ * @link        https://docs.nailsapp.co.uk/modules/other/mailchimp
+ */
 
-use Nails\Common\Helper\ArrayHelper;
+namespace Nails\MailChimp\Service;
+
+use Nails\Common\Exception\FactoryException;
+use Nails\Common\Factory\HttpRequest;
+use Nails\Config;
+use Nails\Factory;
+use Nails\MailChimp\Constants;
 use Nails\MailChimp\Exception\Api\ApiException;
 use Nails\MailChimp\Exception\Api\UnauthorisedException;
-use Nails\MailChimp\Factory\Api\Lists\Member;
+use Nails\MailChimp\Exception\Api\UnhandledHttpRequestException;
+use Nails\MailChimp\Factory\Audience;
+use Nails\MailChimp\Factory\Lists;
+use Nails\MailChimp\Factory\Member;
 use stdClass;
 
 /**
  * Class Client
  *
- * @package Nails\MailChimp\Api\Factory
+ * @package Nails\MailChimp\Service
  */
 class Client
 {
-    const API_URL             = 'https://%s.api.mailchimp.com/%s/';
+    const DEFAULT_API_URL     = 'https://%s.api.mailchimp.com/%s/';
     const DEFAULT_DATA_CENTER = '';
     const DEFAULT_API_KEY     = '';
-    const DEFAULT_API_VERSION = '3.0';
-
-    const HTTP_METHOD_GET    = 'GET';
-    const HTTP_METHOD_POST   = 'POST';
-    const HTTP_METHOD_PATCH  = 'PATCH';
-    const HTTP_METHOD_DELETE = 'DELETE';
+    const HTTP_METHOD_GET     = 'GET';
+    const HTTP_METHOD_POST    = 'POST';
+    const HTTP_METHOD_PATCH   = 'PATCH';
+    const HTTP_METHOD_DELETE  = 'DELETE';
 
     // --------------------------------------------------------------------------
 
     /**
-     * The instance of the lists class
+     * The API URL to use
      *
-     * @var Lists
+     * @var string
      */
-    protected $oListsInstance;
-
-    /**
-     * The instance of the member class
-     *
-     * @var Member
-     */
-    protected $oMemberInstance;
-
-    // --------------------------------------------------------------------------
+    protected $sApiUrl;
 
     /**
      * The data center of the account
      *
      * @var string
      */
-    private $sDataCenter;
+    protected $sDataCenter;
 
     /**
      * The API key
      *
      * @var string
      */
-    private $sApiKey;
+    protected $sApiKey;
 
     /**
      * The API version
      *
      * @var string
      */
-    private $sApiVersion;
+    protected $sApiVersion = '3.0';
 
     // --------------------------------------------------------------------------
 
     /**
      * Client constructor.
-     *
-     * @param array  $aConfig         The config array
-     * @param Member $oMemberInstance The instance of the Member class
-     * @param Lists  $oListsInstance  The instance of the Lists class
      */
-    public function __construct(
-        array $aConfig = [],
-        Member $oMemberInstance = null,
-        Lists $oListsInstance = null
-    ) {
-        if (is_null($oMemberInstance)) {
-            $this->oMemberInstance = new Member();
-        }
-        $this->oMemberInstance->setClient($this);
+    public function __construct()
+    {
+        $this->sApiUrl     = Config::get('MAILCHIMP_API_URL', static::DEFAULT_API_URL);
+        $this->sDataCenter = Config::get('MAILCHIMP_DATA_CENTER', static::DEFAULT_DATA_CENTER);
+        $this->sApiKey     = Config::get('MAILCHIMP_API_KEY', static::DEFAULT_API_KEY);
+    }
 
-        if (is_null($oListsInstance)) {
-            $this->oListsInstance = new Lists();
-        }
-        $this->oListsInstance->setClient($this);
-        $this->oListsInstance->setMember($this->oMemberInstance);
+    // --------------------------------------------------------------------------
 
-        // --------------------------------------------------------------------------
-
-        //  @todo (Pablo - 2019-06-12) - Default to database values?
-        $this->sDataCenter = (string) ArrayHelper::getFromArray('data_center', $aConfig, static::DEFAULT_DATA_CENTER);
-        $this->sApiKey     = (string) ArrayHelper::getFromArray('api_key', $aConfig, static::DEFAULT_API_KEY);
-        $this->sApiVersion = (string) ArrayHelper::getFromArray('api_version', $aConfig, static::DEFAULT_API_VERSION);
+    /**
+     * Returns the API URL
+     *
+     * @return string
+     */
+    public function getApiUrl(): string
+    {
+        return $this->sApiUrl;
     }
 
     // --------------------------------------------------------------------------
@@ -144,45 +141,56 @@ class Client
      *
      * @return stdClass|null
      * @throws ApiException
-     * @throws UnauthorisedException
+     * @throws FactoryException
      */
     public function call(string $sMethod, string $sEndPoint, array $aParameters = []): ?stdClass
     {
         $sUrl = sprintf(
-                static::API_URL,
-                $this->getDataCenter(),
-                $this->getApiVersion()
-            ) . $sEndPoint;
-
-        $oCurl = curl_init($sUrl);
-
-        curl_setopt($oCurl, CURLOPT_CUSTOMREQUEST, $sMethod);
+            $this->getApiUrl(),
+            $this->getDataCenter(),
+            $this->getApiVersion()
+        );
 
         switch ($sMethod) {
             case static::HTTP_METHOD_GET:
+                /** @var HttpRequest\Get $oHttpRequest */
+                $oHttpRequest = Factory::factory('HttpRequestGet');
                 break;
             case static::HTTP_METHOD_POST:
+                /** @var HttpRequest\Post $oHttpRequest */
+                $oHttpRequest = Factory::factory('HttpRequestPost');
+                break;
             case static::HTTP_METHOD_PATCH:
-                $sData = json_encode($aParameters);
-                curl_setopt($oCurl, CURLOPT_POSTFIELDS, $sData);
-                curl_setopt($oCurl, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($sData),
-                ]);
+                /** @var HttpRequest\Patch $oHttpRequest */
+                $oHttpRequest = Factory::factory('HttpRequestPatch');
                 break;
             case static::HTTP_METHOD_DELETE:
+                /** @var HttpRequest\Delete $oHttpRequest */
+                $oHttpRequest = Factory::factory('HttpRequestDelete');
+                break;
+            default:
+                throw new UnhandledHttpRequestException(
+                    'HTTP "' . $sMethod . '" is not handled by this client'
+                );
                 break;
         }
 
-        curl_setopt($oCurl, CURLOPT_USERPWD, 'apikey:' . $this->sApiKey);
-        curl_setopt($oCurl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($oCurl, CURLOPT_RETURNTRANSFER, true);
+        $oHttpRequest
+            ->baseUri($sUrl)
+            ->path($sEndPoint)
+            ->auth('apiKey', $this->getApiKey());
 
-        $sResponse   = curl_exec($oCurl);
-        $oResponse   = json_decode($sResponse);
-        $iReturnCode = curl_getinfo($oCurl, CURLINFO_HTTP_CODE);
+        switch ($sMethod) {
+            case static::HTTP_METHOD_POST:
+            case static::HTTP_METHOD_PATCH:
+                $oHttpRequest
+                    ->body(json_encode($aParameters));
+                break;
+        }
 
-        curl_close($oCurl);
+        $oHttpResponse = $oHttpRequest->execute();
+        $oResponse     = $oHttpResponse->getBody();
+        $iReturnCode   = $oHttpResponse->getStatusCode();
 
         if ($iReturnCode === 401) {
             throw new UnauthorisedException(
@@ -209,7 +217,7 @@ class Client
      *
      * @return stdClass|null
      * @throws ApiException
-     * @throws UnauthorisedException
+     * @throws FactoryException
      */
     public function get(string $sEndPoint, array $aParameters = []): ?stdClass
     {
@@ -226,7 +234,7 @@ class Client
      *
      * @return stdClass|null
      * @throws ApiException
-     * @throws UnauthorisedException
+     * @throws FactoryException
      */
     public function post(string $sEndPoint, array $aParameters = []): ?stdClass
     {
@@ -243,7 +251,7 @@ class Client
      *
      * @return stdClass|null
      * @throws ApiException
-     * @throws UnauthorisedException
+     * @throws FactoryException
      */
     public function delete(string $sEndPoint, array $aParameters = []): ?stdClass
     {
@@ -260,7 +268,7 @@ class Client
      *
      * @return stdClass|null
      * @throws ApiException
-     * @throws UnauthorisedException
+     * @throws FactoryException
      */
     public function patch(string $sEndPoint, array $aParameters = []): ?stdClass
     {
@@ -270,12 +278,33 @@ class Client
     // --------------------------------------------------------------------------
 
     /**
-     * Returns the Lists interface
+     * Returns the audience factory
      *
-     * @return Lists
+     * @return Audience
+     * @throws FactoryException
      */
-    public function lists(): Lists
+    public function audience(): Audience
     {
-        return $this->oListsInstance;
+        /** @var Audience $oAudience */
+        $oAudience = Factory::factory('Audience', Constants::MODULE_SLUG, $this);
+        return $oAudience;
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Returns the members factory for a specific list
+     *
+     * @param string $sListId The ID of the list to return the members for
+     *
+     * @return Member
+     * @throws ApiException
+     * @throws FactoryException
+     */
+    public function members(string $sListId): Member
+    {
+        return $this->audience()
+            ->getById($sListId)
+            ->members();
     }
 }

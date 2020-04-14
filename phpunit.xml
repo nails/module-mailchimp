@@ -5,8 +5,7 @@
         </testsuite>
     </testsuites>
     <php>
-        <env name="MAILCHIMP_DATA_CENTER" value=""/>
-        <env name="MAILCHIMP_API_KEY" value=""/>
-        <env name="MAILCHIMP_API_VERSION" value="3.0"/>
+        <env name="TEST_DATA_CENTER" value=""/>
+        <env name="TEST_API_KEY" value=""/>
     </php>
 </phpunit>
