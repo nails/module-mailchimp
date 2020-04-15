@@ -256,6 +256,52 @@ final class MemberTest extends TestCase
     // --------------------------------------------------------------------------
 
     /**
+     * @covers \Nails\MailChimp\Factory\Member::unsubscribe
+     * @throws ApiException
+     * @throws FactoryException
+     */
+    public function test_can_unsubscribe_member()
+    {
+        if (empty(static::$oAudience)) {
+            $this->addWarning('Audience not set');
+        } elseif (empty(static::$oMember)) {
+            $this->addWarning('Member not set');
+        } else {
+
+            $oMember = static::$oAudience
+                ->members()
+                ->unsubscribe(static::$oMember->email_address);
+
+            $this->assertEquals('unsubscribed', $oMember->status);
+        }
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * @covers \Nails\MailChimp\Factory\Member::subscribe
+     * @throws ApiException
+     * @throws FactoryException
+     */
+    public function test_can_subscribe_member()
+    {
+        if (empty(static::$oAudience)) {
+            $this->addWarning('Audience not set');
+        } elseif (empty(static::$oMember)) {
+            $this->addWarning('Member not set');
+        } else {
+
+            $oMember = static::$oAudience
+                ->members()
+                ->subscribe(static::$oMember->email_address);
+
+            $this->assertEquals('subscribed', $oMember->status);
+        }
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * @covers \Nails\MailChimp\Factory\Member::archive
      * @throws ApiException
      * @throws FactoryException

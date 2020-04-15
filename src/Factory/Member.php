@@ -209,6 +209,38 @@ class Member
     // --------------------------------------------------------------------------
 
     /**
+     * Sets a member as subscribed
+     *
+     * @param string $sEmail The email address of the member
+     *
+     * @return Resource\Member
+     * @throws ApiException
+     * @throws FactoryException
+     */
+    public function subscribe(string $sEmail): Resource\Member
+    {
+        return $this->update($sEmail, ['status' => 'subscribed']);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Sets a member as unsubscribed
+     *
+     * @param string $sEmail The email address of the member
+     *
+     * @return Resource\Member
+     * @throws ApiException
+     * @throws FactoryException
+     */
+    public function unsubscribe(string $sEmail): Resource\Member
+    {
+        return $this->update($sEmail, ['status' => 'unsubscribed']);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
      * Archives an existing member
      *
      * @param string $sEmail The email address of the member
