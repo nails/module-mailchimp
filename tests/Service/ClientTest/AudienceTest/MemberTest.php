@@ -233,7 +233,7 @@ final class MemberTest extends TestCase
     {
         if (empty(static::$oAudience)) {
             $this->addWarning('Audience not set');
-        } elseif (empty(static::$oAudience)) {
+        } elseif (empty(static::$oMember)) {
             $this->addWarning('Member not set');
         } else {
 
@@ -264,7 +264,7 @@ final class MemberTest extends TestCase
     {
         if (empty(static::$oAudience)) {
             $this->addWarning('Audience not set');
-        } elseif (empty(static::$oAudience)) {
+        } elseif (empty(static::$oMember)) {
             $this->addWarning('Member not set');
         } else {
 
@@ -291,7 +291,7 @@ final class MemberTest extends TestCase
     {
         if (empty(static::$oAudience)) {
             $this->addWarning('Audience not set');
-        } elseif (empty(static::$oAudience)) {
+        } elseif (empty(static::$oMember)) {
             $this->addWarning('Member not set');
         } else {
 
@@ -321,7 +321,7 @@ final class MemberTest extends TestCase
     {
         if (empty(static::$oAudience)) {
             $this->addWarning('Audience not set');
-        } elseif (empty(static::$oAudience)) {
+        } elseif (empty(static::$oMember)) {
             $this->addWarning('Member not set');
         } else {
 
