@@ -1,55 +1,68 @@
 {
-    "name": "nails\/module-mailchimp",
-    "keywords": [
+    "name": "nails/module-mailchimp",
+    "keywords":
+    [
         "Nails",
         "Shed Collective",
         "CodeIgniter",
         "MailChimp Module",
         "MailChimp"
     ],
-    "homepage": "https:\/\/nailsapp.co.uk\/modules\/mailchimp",
+    "homepage": "https://nailsapp.co.uk/modules/mailchimp",
     "description": "This module allows Nails applications to sync with MailChimp",
     "license": "MIT",
-    "authors": [
+    "authors":
+    [
         {
             "name": "Pablo de la Pena",
             "email": "p@nailsapp.co.uk",
-            "homepage": "http:\/\/nailsapp.co.uk",
+            "homepage": "http://nailsapp.co.uk",
             "role": "Developer"
         }
     ],
-    "support": {
+    "support":
+    {
         "email": "hello@nailsapp.co.uk"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "require": {
+    "require":
+    {
         "ext-curl": "*",
         "ext-json": "*",
-        "nails\/common": "dev-feature/pre-new-admin-ci-php8"
+        "nails/common": "dev-feature/pre-new-admin"
     },
-    "require-dev": {
-        "phpunit\/phpunit": "8.*"
+    "require-dev":
+    {
+        "phpunit/phpunit": "8.*"
     },
-    "autoload": {
-        "psr-4": {
-            "Nails\\MailChimp\\": "src\/"
+    "autoload":
+    {
+        "psr-4":
+        {
+            "Nails\\MailChimp\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Nails\\MailChimp\\Tests\\": "tests\/"
+    "autoload-dev":
+    {
+        "psr-4":
+        {
+            "Nails\\MailChimp\\Tests\\": "tests/"
         }
     },
-    "extra": {
-        "nails": {
+    "extra":
+    {
+        "nails":
+        {
             "moduleName": "module-mailchimp",
             "type": "module",
             "namespace": "Nails\\MailChimp\\",
-            "data": {}
+            "data":
+            {}
         }
     },
-    "scripts": {
+    "scripts":
+    {
         "test": "./vendor/bin/phpunit"
     }
 }
