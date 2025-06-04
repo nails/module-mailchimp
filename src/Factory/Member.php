@@ -76,7 +76,7 @@ class Member
      *
      * @return string
      */
-    protected function buildEndpoint(string $sEmail = null)
+    protected function buildEndpoint(?string $sEmail = null)
     {
         $sEndpoint = 'lists/' . $this->oAudience->id . '/members';
         if (!empty($sEmail)) {

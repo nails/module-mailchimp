@@ -55,7 +55,7 @@ class Audience
      *
      * @return string
      */
-    protected function buildEndpoint(string $sId = null)
+    protected function buildEndpoint(?string $sId = null)
     {
         return 'lists' . (!empty($sId) ? '/' . $sId : '');
     }
