@@ -60,7 +60,7 @@
     {
         "nails":
         {
-            "moduleName": "module-mailchimp",
+            "moduleName": "mailchimp",
             "type": "module",
             "namespace": "Nails\\MailChimp\\",
             "data":
