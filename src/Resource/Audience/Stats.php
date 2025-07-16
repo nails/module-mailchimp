@@ -72,9 +72,9 @@ class Stats extends Resource
 
     // --------------------------------------------------------------------------
 
-    public function __construct($mObj = [])
+    public function __construct(self|\stdClass|array $resource = [])
     {
-        parent::__construct($mObj);
+        parent::__construct($resource);
 
         $this->last_sub_date   = !empty($this->last_sub_date)
             ? Factory::resource('DateTime', null, ['raw' => $this->last_sub_date])

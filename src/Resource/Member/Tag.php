@@ -37,13 +37,13 @@ class Tag extends \Nails\Common\Resource
     /**
      * Tag constructor.
      *
-     * @param $mObj
+     * @param $resource
      *
      * @throws FactoryException
      */
-    public function __construct($mObj)
+    public function __construct(self|\stdClass|array $resource)
     {
-        parent::__construct($mObj);
+        parent::__construct($resource);
 
         $this->date_added = !empty($this->date_added)
             ? Factory::resource('DateTime', null, ['raw' => $this->date_added])

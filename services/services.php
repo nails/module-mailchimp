@@ -61,92 +61,104 @@ return [
      * A class which represents an object from the database
      */
     'resources' => [
-        'Audience'                 => function ($oObj, Service\Client $oClient): Resource\Audience {
+        'Audience'                 => function ($resource, Service\Client $oClient): Resource\Audience {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Audience')) {
-                return new \App\MailChimp\Resource\Audience($oObj, $oClient);
+                return new \App\MailChimp\Resource\Audience($resource, $oClient);
             } else {
-                return new Resource\Audience($oObj, $oClient);
+                return new Resource\Audience($resource, $oClient);
             }
         },
-        'AudienceCampaignDefaults' => function ($oObj): Resource\Audience\CampaignDefaults {
+        'AudienceCampaignDefaults' => function ($resource, $model = null): Resource\Audience\CampaignDefaults {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Audience\CampaignDefaults')) {
-                return new \App\MailChimp\Resource\Audience\CampaignDefaults($oObj);
+                return new \App\MailChimp\Resource\Audience\CampaignDefaults($resource);
             } else {
-                return new Resource\Audience\CampaignDefaults($oObj);
+                return new Resource\Audience\CampaignDefaults($resource);
             }
         },
-        'AudienceContact'          => function ($oObj): Resource\Audience\Contact {
+        'AudienceContact'          => function ($resource, $model = null): Resource\Audience\Contact {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Audience\Contact')) {
-                return new \App\MailChimp\Resource\Audience\Contact($oObj);
+                return new \App\MailChimp\Resource\Audience\Contact($resource);
             } else {
-                return new Resource\Audience\Contact($oObj);
+                return new Resource\Audience\Contact($resource);
             }
         },
-        'AudienceLink'             => function ($oObj): Resource\Audience\Link {
+        'AudienceLink'             => function ($resource, $model = null): Resource\Audience\Link {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Audience\Link')) {
-                return new \App\MailChimp\Resource\Audience\Link($oObj);
+                return new \App\MailChimp\Resource\Audience\Link($resource);
             } else {
-                return new Resource\Audience\Link($oObj);
+                return new Resource\Audience\Link($resource);
             }
         },
-        'AudienceModule'           => function ($oObj): Resource\Audience\Module {
+        'AudienceModule'           => function ($resource, $model = null): Resource\Audience\Module {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Audience\Module')) {
-                return new \App\MailChimp\Resource\Audience\Module($oObj);
+                return new \App\MailChimp\Resource\Audience\Module($resource);
             } else {
-                return new Resource\Audience\Module($oObj);
+                return new Resource\Audience\Module($resource);
             }
         },
-        'AudienceStats'            => function ($oObj): Resource\Audience\Stats {
+        'AudienceStats'            => function ($resource, $model = null): Resource\Audience\Stats {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Audience\Stats')) {
-                return new \App\MailChimp\Resource\Audience\Stats($oObj);
+                return new \App\MailChimp\Resource\Audience\Stats($resource);
             } else {
-                return new Resource\Audience\Stats($oObj);
+                return new Resource\Audience\Stats($resource);
             }
         },
         'Member'                   => function (
-            $oObj,
+            //  @todo (Pablo 2025-07-15) - this should be a factory
+            $resource,
             Service\Client $oClient,
             Resource\Audience $oAudience
         ): Resource\Member {
             if (class_exists('\App\MailChimp\Resource\Member')) {
-                return new \App\MailChimp\Resource\Member($oObj, $oClient, $oAudience);
+                return new \App\MailChimp\Resource\Member($resource, $oClient, $oAudience);
             } else {
-                return new Resource\Member($oObj, $oClient, $oAudience);
+                return new Resource\Member($resource, $oClient, $oAudience);
             }
         },
-        'MemberLink'               => function ($oObj): Resource\Member\Link {
+        'MemberLink'               => function ($resource, $model = null): Resource\Member\Link {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Member\Link')) {
-                return new \App\MailChimp\Resource\Member\Link($oObj);
+                return new \App\MailChimp\Resource\Member\Link($resource);
             } else {
-                return new Resource\Member\Link($oObj);
+                return new Resource\Member\Link($resource);
             }
         },
-        'MemberLocation'           => function ($oObj): Resource\Member\Location {
+        'MemberLocation'           => function ($resource, $model = null): Resource\Member\Location {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Member\Location')) {
-                return new \App\MailChimp\Resource\Member\Location($oObj);
+                return new \App\MailChimp\Resource\Member\Location($resource);
             } else {
-                return new Resource\Member\Location($oObj);
+                return new Resource\Member\Location($resource);
             }
         },
-        'MemberMergeFields'        => function ($oObj): Resource\Member\MergeFields {
+        'MemberMergeFields'        => function ($resource, $model = null): Resource\Member\MergeFields {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Member\MergeFields')) {
-                return new \App\MailChimp\Resource\Member\MergeFields($oObj);
+                return new \App\MailChimp\Resource\Member\MergeFields($resource);
             } else {
-                return new Resource\Member\MergeFields($oObj);
+                return new Resource\Member\MergeFields($resource);
             }
         },
-        'MemberStats'              => function ($oObj): Resource\Member\Stats {
+        'MemberStats'              => function ($resource, $model = null): Resource\Member\Stats {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Member\Stats')) {
-                return new \App\MailChimp\Resource\Member\Stats($oObj);
+                return new \App\MailChimp\Resource\Member\Stats($resource);
             } else {
-                return new Resource\Member\Stats($oObj);
+                return new Resource\Member\Stats($resource);
             }
         },
-        'MemberTag'                => function ($oObj): Resource\Member\Tag {
+        'MemberTag'                => function ($resource, $model = null): Resource\Member\Tag {
+            //  @todo (Pablo 2025-07-15) - this should be a factory
             if (class_exists('\App\MailChimp\Resource\Member\Tag')) {
-                return new \App\MailChimp\Resource\Member\Tag($oObj);
+                return new \App\MailChimp\Resource\Member\Tag($resource);
             } else {
-                return new Resource\Member\Tag($oObj);
+                return new Resource\Member\Tag($resource);
             }
         },
     ],

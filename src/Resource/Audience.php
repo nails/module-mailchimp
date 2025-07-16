@@ -100,14 +100,14 @@ class Audience extends \Nails\Common\Resource
     /**
      * Audience constructor.
      *
-     * @param array  $mObj
+     * @param array  $resource
      * @param Client $oClient
      *
      * @throws FactoryException
      */
-    public function __construct($mObj, Client $oClient)
+    public function __construct(self|\stdClass|array $resource, Client $oClient)
     {
-        parent::__construct($mObj);
+        parent::__construct($resource);
 
         $this->oClient = $oClient;
 
