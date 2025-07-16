@@ -106,15 +106,15 @@ class Member extends \Nails\Common\Resource
     /**
      * Member constructor.
      *
-     * @param array    $mObj
+     * @param array    $resource
      * @param Client   $oClient
      * @param Audience $oAudience
      *
      * @throws FactoryException
      */
-    public function __construct($mObj, Client $oClient, Audience $oAudience)
+    public function __construct(self|\stdClass|array $resource, Client $oClient, Audience $oAudience)
     {
-        parent::__construct($mObj);
+        parent::__construct($resource);
 
         $this->oClient   = $oClient;
         $this->oAudience = $oAudience;
