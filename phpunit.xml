@@ -6,7 +6,7 @@
     </testsuites>
     <php>
         <env name="PRIVATE_KEY" value="abc123"/>
-        <env name="TEST_DATA_CENTER" value=""/>
-        <env name="TEST_API_KEY" value=""/>
+        <env name="TEST_DATA_CENTER" value="datacenter"/>
+        <env name="TEST_API_KEY" value="123-datacenter"/>
     </php>
 </phpunit>
