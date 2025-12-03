@@ -62,6 +62,14 @@ class Client
      */
     protected $sApiVersion = '3.0';
 
+    /**
+     * Optional transport override for testing; if set, `call` delegates here instead of performing HTTP.
+     * Signature: function (string $method, string $endpoint, array $params): ?stdClass
+     *
+     * @var callable|null
+     */
+    protected $fnTransport = null;
+
     // --------------------------------------------------------------------------
 
     /**
@@ -142,6 +150,11 @@ class Client
      */
     public function call(string $sMethod, string $sEndPoint, array $aParameters = []): ?stdClass
     {
+        // If a transport override is configured (e.g. during tests), delegate to it
+        if (is_callable($this->fnTransport)) {
+            return call_user_func($this->fnTransport, $sMethod, $sEndPoint, $aParameters);
+        }
+
         $sUrl = sprintf(
             $this->getApiUrl(),
             $this->getDataCenter(),
@@ -303,5 +316,17 @@ class Client
         return $this->audiences()
             ->getById($sListId)
             ->members();
+    }
+
+    // --------------------------------------------------------------------------
+
+    /**
+     * Sets a transport override callable (primarily for testing/mocking).
+     *
+     * @param callable|null $fnTransport
+     */
+    public function setTransport(?callable $fnTransport): void
+    {
+        $this->fnTransport = $fnTransport;
     }
 }
