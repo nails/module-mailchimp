@@ -5,11 +5,12 @@ namespace Nails\MailChimp\Tests\Service\ClientTest\AudienceTest\MemberTest;
 use Nails\Common\Exception\FactoryException;
 use Nails\Factory;
 use Nails\MailChimp\Constants;
+use Nails\MailChimp\Exception\Api\ApiException;
 use Nails\MailChimp\Factory\Tag;
 use Nails\MailChimp\Resource;
-use Nails\MailChimp\Exception\Api\ApiException;
 use Nails\MailChimp\Service\Client;
 use Nails\MailChimp\Tests\Service\ClientTest\AudienceTest;
+use Nails\MailChimp\Tests\Support\FakeMailchimpTransport;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,9 +37,13 @@ final class TagTest extends TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::$oClient   = Factory::service('Client', Constants::MODULE_SLUG);
+        static::$oClient = Factory::service('Client', Constants::MODULE_SLUG);
+        // Use fake transport to avoid real HTTP during tests
+        static::$oClient->setTransport(new FakeMailchimpTransport());
+
         static::$oAudience = AudienceTest::createAudience(static::$oClient);
         static::$oMember   = AudienceTest\MemberTest::createMember(static::$oAudience);
+
         parent::setUpBeforeClass();
     }
 

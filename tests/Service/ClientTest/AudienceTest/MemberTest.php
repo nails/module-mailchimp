@@ -10,6 +10,7 @@ use Nails\MailChimp\Factory\Member;
 use Nails\MailChimp\Resource;
 use Nails\MailChimp\Service\Client;
 use Nails\MailChimp\Tests\Service\ClientTest\AudienceTest;
+use Nails\MailChimp\Tests\Support\FakeMailchimpTransport;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,8 +37,12 @@ final class MemberTest extends TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        static::$oClient   = Factory::service('Client', Constants::MODULE_SLUG);
+        static::$oClient = Factory::service('Client', Constants::MODULE_SLUG);
+        // Use fake transport to avoid real HTTP during tests
+        static::$oClient->setTransport(new FakeMailchimpTransport());
+
         static::$oAudience = AudienceTest::createAudience(static::$oClient);
+
         parent::setUpBeforeClass();
     }
 

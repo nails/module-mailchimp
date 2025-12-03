@@ -6,9 +6,10 @@ use Nails\Common\Exception\FactoryException;
 use Nails\Factory;
 use Nails\MailChimp\Constants;
 use Nails\MailChimp\Exception\Api\ApiException;
+use Nails\MailChimp\Factory\Audience;
 use Nails\MailChimp\Resource;
 use Nails\MailChimp\Service\Client;
-use Nails\MailChimp\Factory\Audience;
+use Nails\MailChimp\Tests\Support\FakeMailchimpTransport;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -32,6 +33,9 @@ final class AudienceTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         static::$oClient = Factory::service('Client', Constants::MODULE_SLUG);
+        // Use fake transport to avoid real HTTP during tests
+        static::$oClient->setTransport(new FakeMailchimpTransport());
+
         parent::setUpBeforeClass();
     }
 
