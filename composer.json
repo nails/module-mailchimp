@@ -28,7 +28,7 @@
     "prefer-stable": true,
     "require":
     {
-        "php": "^8.1",
+        "php": ">=8.3",
         "ext-curl": "*",
         "ext-json": "*",
         "nails/common": "dev-develop"
